@@ -1,4 +1,4 @@
-The emotion of the robot face is set by sending a Uint8 on the control_emo topic
+The emotions of the robot face are set by sending a Uint8 on the control_emo topic
 
 1 = happy
 2 = sad
