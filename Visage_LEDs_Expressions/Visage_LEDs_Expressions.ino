@@ -1,4 +1,6 @@
 #include <Adafruit_NeoPixel.h>
+#include <ros.h>
+#include <std_msgs/UInt8.h>
 
 #ifdef __AVR__
   #include <avr/power.h>
@@ -16,44 +18,61 @@
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int delayval = 5; // delay for half a second
-void setup() {
-  // put your setup code here, to run once:
-  pixels.begin(); // This initializes the NeoPixel library.
-}
 
-void loop() {
-/*Émotion : Content*********************************************/
+void emo_content()
+{
+  /*Émotion : Content*********************************************/
   eye_1(50,50,50);
   eye_2(50,50,50);
   //bouche_vide(); //Changer LED3 et LED45
   smile(50,50,50);
   delay(1000);
-/*Émotion : Triste*********************************************/
+}
+
+void emo_triste()
+{
+  /*Émotion : Triste*********************************************/
   bouche_vide();
   eye_1(0,0,50);
   eye_2(0,0,50);
   sad(0,0,50);
-/*Émotion : Circonspect *********************************************/
+}
+
+void emo_ciconspect()
+{
+  /*Émotion : Circonspect *********************************************/
   delay(1000);
   bouche_vide();
   eye_1(50,50,50);
   eye_2(50,50,50);
   bouche_fermee(50,50,50);
-/*Émotion : Faché*********************************************/
+}
+
+void emo_fache()
+{
+  /*Émotion : Faché*********************************************/
   delay(1000);
   bouche_vide();
   petite_bouche(50,0,0);
   eye_1(50,0,0);
   eye_2(50,0,0); 
   delay(1000);
-/*Émotion : Surpris*********************************************/
+}
+
+void emo_surpris()
+{
+  /*Émotion : Surpris*********************************************/
   bouche_vide();
   eye_1(0,50,0);
   eye_2(0,50,0);
   grande_bouche(0,50,0);
   delay(1000);
   // photo();
-/*Émotion : Coquin*********************************************/
+}
+
+void emo_coquin()
+{
+  /*Émotion : Coquin*********************************************/
   bouche_vide();
   eye_1(50,50,50);
   eye_2(50,50,50);
@@ -63,7 +82,11 @@ void loop() {
   delay(500);
   eye_1(50,50,50);
   delay(500);
-/*Émotion : Party*********************************************/
+}
+
+void emo_party()
+{
+  /*Émotion : Party*********************************************/
   eye_1(255,20,147);
   eye_2(255,20,147);
   bouche_fermee(255,20,147);
@@ -82,7 +105,6 @@ void loop() {
   theaterChase(pixels.Color(127, 127, 127), 100); // White
   theaterChase(pixels.Color(127, 0, 0), 100); // Red
   theaterChase(pixels.Color(0, 0, 127), 100); // Blue
-/*************************************************************/  
 }
 
 void eye_1(uint8_t R,uint8_t G,uint8_t B){
@@ -232,4 +254,62 @@ void theaterChase(uint32_t c, uint8_t wait) {
     }
   }
 }
+
+//void control_eye(const std_msgs::UInt8& emo){}
+//void control_emo(const std_msgs::UInt8& emo){}
+
+void control_emo(const std_msgs::UInt8& emo)
+{
+	switch (emo.data) 
+	{
+	    case 1:
+	      emo_content();
+	      break;
+	    case 2:
+	      emo_triste();
+	      break;
+	    case 3:
+	      emo_ciconspect();
+	      break;
+	    case 4:
+	      emo_fache();
+	      break;
+	    case 5:
+	      emo_surpris();
+	      break;
+	    case 6:
+	      emo_coquin();
+	      break;
+	    case 7:
+	      emo_party();
+	      break;
+	    default:
+	      emo_content();
+	}
+}
+
+ros::NodeHandle nh;
+//ros::Subscriber<std_msgs::uint8_t> subMouth("control_mouth", control_mouth );
+//ros::Subscriber<std_msgs::uint8_t> subEye("control_eye", control_eye );
+ros::Subscriber<std_msgs::UInt8> subEmo("control_emo", control_emo );
+
+void setup() 
+{
+  // put your setup code here, to run once:
+  pixels.begin(); // This initializes the NeoPixel library.
+
+  nh.initNode();
+  //nh.subscribe(subMouth);
+  //nh.subscribe(subEye);
+  nh.subscribe(subEmo);
+}
+
+void loop() 
+{
+  
+nh.spinOnce();
+
+}
+
+
 
