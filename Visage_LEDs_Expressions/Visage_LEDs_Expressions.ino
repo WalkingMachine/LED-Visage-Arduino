@@ -8,16 +8,69 @@
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1
-#define PIN            6
+#define PIN            10
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS   81
-#define EYEPIXELS  14
+#define EYEPIXELS   14
 #define BASE_BOUCHE EYEPIXELS*2
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int delayval = 5; // delay for half a second
+
+void loadingFade()
+{
+  int OEIL_1 = 0;
+  int OEIL_2 = 14;
+  int wait = 5;
+  for(int j = 0; j <= 150; j++)
+  {
+    for(int i=OEIL_1; i<(OEIL_1+14); i++)
+    {
+      pixels.setPixelColor(i, pixels.Color(j,j,j)); 
+    }
+    for(int i=OEIL_2; i<(OEIL_2+14); i++)
+    {
+      pixels.setPixelColor(i, pixels.Color(j,j,j));
+    }
+    pixels.show();
+    delay(wait);
+  }
+  for(int j = 150; j >= 0; j--)
+  {
+    for(int i=OEIL_1; i<(OEIL_1+14); i++)
+    {
+      pixels.setPixelColor(i, pixels.Color(j,j,j)); 
+    }
+    for(int i=OEIL_2; i<(OEIL_2+14); i++)
+    {
+      pixels.setPixelColor(i, pixels.Color(j,j,j));
+    }
+    pixels.show();
+    delay(wait);
+  }
+}
+void loadingRoll()
+{
+  int OEIL_1 = 0;
+  int OEIL_2 = 14;
+  int wait = 5;
+  for(int j = 0; j <= 14; j++)
+  {  
+    pixels.setPixelColor(OEIL_1+j, pixels.Color(0,0,50)); 
+    pixels.setPixelColor(OEIL_2+j, pixels.Color(0,0,50)); 
+    pixels.show();
+    delay(wait);
+  }
+  for(int j = 0; j <= 14; j++)
+  {  
+    pixels.setPixelColor(OEIL_1+j, pixels.Color(0,0,0)); 
+    pixels.setPixelColor(OEIL_2+j, pixels.Color(0,0,0)); 
+    pixels.show();
+    delay(wait);
+  }
+}
 
 void emo_content()
 {
@@ -305,10 +358,9 @@ void setup()
 }
 
 void loop() 
-{
-  
-nh.spinOnce();
-
+{  
+  loadingFade();
+  nh.spinOnce();
 }
 
 
