@@ -15,9 +15,31 @@
 #define EYEPIXELS   14
 #define BASE_BOUCHE EYEPIXELS*2
 
+#define DEFAULT_BRIGHTNESS 75
+
+
+
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int delayval = 5; // delay for half a second
+int luminosite = 1;
+int mode = 0; // 0 = wait, 1 = start, 2 = running, 3 = loading
+
+void openFade()
+{
+  for(int i = 0; i < 60; i++)
+  {
+    for(int oeil = 0; oeil < EYEPIXELS*2; oeil++)
+    {
+      pixels.setPixelColor(oeil, pixels.Color(i,i,i));
+    }  
+    pixels.show();
+    delay(20);
+    smile(i,i,i);
+    pixels.show();
+  }  
+  delay(1000);
+}
 
 void loadingFade()
 {
@@ -51,30 +73,146 @@ void loadingFade()
     delay(wait);
   }
 }
-void loadingRoll()
+
+void loadingRoll2()
 {
   int OEIL_1 = 0;
-  int OEIL_2 = 14;
-  int wait = 5;
-  for(int j = 0; j <= 14; j++)
+  int OEIL_2 = 14+7;
+  int wait = 100;
+    
+  for(int PositionCercle = 14; PositionCercle > 0; PositionCercle--)
   {  
-    pixels.setPixelColor(OEIL_1+j, pixels.Color(0,0,50)); 
-    pixels.setPixelColor(OEIL_2+j, pixels.Color(0,0,50)); 
+    // Oeil droit
+    for(int i = 0; i < 14; i++)
+    {
+      pixels.setPixelColor((i+PositionCercle)%14, pixels.Color(i*5,i*5,75)); 
+    }
+    // Oeil gauche
+    for(int i = 0; i < 14; i++)
+    {
+      int pos = (i+PositionCercle)%14;
+      
+      if(pos >= 7)
+      {
+        pixels.setPixelColor(pos + 7, pixels.Color(i*5,i*5,75)); 
+      }
+      else 
+      {
+        pixels.setPixelColor(pos + 21, pixels.Color(i*5,i*5,75)); 
+      }
+    }
+    
     pixels.show();
     delay(wait);
   }
-  for(int j = 0; j <= 14; j++)
+}
+
+void xMouth()
+{
+   
+  
+}
+
+// cercle séparé en 2, fonction non complete
+void loadingRoll3()
+{
+  int OEIL_1 = 0;
+  int OEIL_2 = 14+7;
+  int wait = 100;
+    
+  for(int PositionCercle = 14; PositionCercle > 0; PositionCercle--)
   {  
-    pixels.setPixelColor(OEIL_1+j, pixels.Color(0,0,0)); 
-    pixels.setPixelColor(OEIL_2+j, pixels.Color(0,0,0)); 
+    for(int i = 0; i < 14; i++)
+    {
+      pixels.setPixelColor((i+PositionCercle)%14, pixels.Color(i*5,i*5,75)); 
+    }
+    for(int i = 0; i < 14; i++)
+    {
+      if(i >= 7)
+      {
+        pixels.setPixelColor((i+PositionCercle+EYEPIXELS/2)%14, pixels.Color(i*5,i*5,75)); 
+      }
+      else
+      {
+        pixels.setPixelColor((i+PositionCercle+EYEPIXELS)%14, pixels.Color(i*5,i*5,75)); 
+      }
+    }
+    
+    pixels.show();
+    
+    delay(wait);
+  }
+}
+
+void loadingRoll()
+{
+  int OEIL_1 = 0;
+  int OEIL_2 = 14+7;
+  int wait = 25;
+  for(int j = 0; j < 14; j++)
+  {  
+    pixels.setPixelColor(OEIL_1+j, pixels.Color(j*5,j*5,50)); 
+    if(j>=7)
+    {
+      pixels.setPixelColor(7+j, pixels.Color(j*5,j*5,50)); 
+    }
+    else
+    {
+      pixels.setPixelColor(OEIL_2+j, pixels.Color(j*5,j*5,50)); 
+    }
     pixels.show();
     delay(wait);
+  }
+  for(int j = 0; j < 14; j++)
+  {  
+    pixels.setPixelColor(OEIL_1+j, pixels.Color(70+j*4,70+j*4,50)); 
+    
+    if(j>=7)
+    {
+      pixels.setPixelColor(7+j, pixels.Color(70+j*4,70+j*4,50)); 
+    }
+    else
+    {
+      pixels.setPixelColor(OEIL_2+j, pixels.Color(70+j*4,70+j*4,50)); 
+    } 
+    pixels.show();
+    delay(wait);
+  }
+  for(int j = 0; j < 14; j++)
+  {  
+    pixels.setPixelColor(OEIL_1+j, pixels.Color(70+j/4,70+j/4,50)); 
+    
+    if(j>=7)
+    {
+      pixels.setPixelColor(7+j, pixels.Color(70+j/4,70+j/4,50)); 
+    }
+    else
+    {
+      pixels.setPixelColor(OEIL_2+j, pixels.Color(70+j/4,70+j/4,50)); 
+    } 
+    pixels.show();
+    delay(wait/2);
+  }
+  for(int j = 0; j < 14; j++)
+  {  
+    pixels.setPixelColor(OEIL_1+j, pixels.Color(j/5,j/5,50)); 
+    if(j>=7)
+    {
+      pixels.setPixelColor(7+j, pixels.Color(j/5,j/5,50)); 
+    }
+    else
+    {
+      pixels.setPixelColor(OEIL_2+j, pixels.Color(j/5,j/5,50)); 
+    }
+    pixels.show();
+    delay(wait/2);
   }
 }
 
 void emo_content()
 {
   /*Émotion : Content*********************************************/
+  clearPixels();
   eye_1(50,50,50);
   eye_2(50,50,50);
   //bouche_vide(); //Changer LED3 et LED45
@@ -289,7 +427,13 @@ void grande_bouche(uint8_t R,uint8_t G,uint8_t B){
     }
   }
   
-
+  void clearPixels()
+  {
+    for(int i=0; i < NUMPIXELS; i++)
+    {
+     pixels.setPixelColor(i,pixels.Color(0,0,0)); 
+    }
+  }
   //Theatre-style crawling lights.
 void theaterChase(uint32_t c, uint8_t wait) {
   for (int j=0; j<10; j++) {  //do 10 cycles of chasing
@@ -341,10 +485,23 @@ void control_emo(const std_msgs::UInt8& emo)
 	}
 }
 
+void set_brightness(const std_msgs::UInt8& value)
+{
+ pixels.setBrightness(value.data);
+ pixels.show(); 
+  
+}
+void set_mode(const std_msgs::UInt8& modeVal)
+{
+  if(modeVal.data >= 0 && modeVal.data <= 2)
+    mode = modeVal.data;
+}
+
 ros::NodeHandle nh;
-//ros::Subscriber<std_msgs::uint8_t> subMouth("control_mouth", control_mouth );
-//ros::Subscriber<std_msgs::uint8_t> subEye("control_eye", control_eye );
+
 ros::Subscriber<std_msgs::UInt8> subEmo("control_emo", control_emo );
+ros::Subscriber<std_msgs::UInt8> setBright("face_bright", set_brightness );
+ros::Subscriber<std_msgs::UInt8> setMode("face_mode", set_mode);
 
 void setup() 
 {
@@ -355,11 +512,34 @@ void setup()
   //nh.subscribe(subMouth);
   //nh.subscribe(subEye);
   nh.subscribe(subEmo);
+  nh.subscribe(setBright);
+  nh.subscribe(setMode);
+  pixels.setBrightness(DEFAULT_BRIGHTNESS);
+  clearPixels(); 
+  pixels.show();
 }
 
 void loop() 
-{  
-  loadingFade();
+{ 
+  if(mode == 0)
+  { 
+    
+  }
+  else if (mode == 1)
+  {
+    openFade();
+    mode = 3;
+  }
+  else if(mode == 3)
+  {
+    loadingRoll2();
+    smile(60,60,60);
+  }
+  else if(mode == 2)
+  {
+    emo_content();
+    mode = 0;
+  }
   nh.spinOnce();
 }
 

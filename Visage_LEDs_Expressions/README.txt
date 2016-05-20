@@ -1,9 +1,19 @@
-The emotions of the robot face are set by sending a Uint8 on the control_emo topic
+## Topics :
+/control_emo 
+   UInt8 : 1-7
+	1 : content
+	2 : triste
+	3 : circonspect
+	4 : fache
+	5 : surpris
+	6 : coquin
+	7 : party
 
-1 = happy
-2 = sad
-3 = neutral
-4 = angry
-5 = suprised
-6 = wink
-7 = party
+/face_bright
+   UInt8 : 0-255
+
+/face_mode
+   UInt8 : 0-4
+  	0 : waiting mode
+	1 : wake up + loading
+	2 : smiling, waiting for command 
