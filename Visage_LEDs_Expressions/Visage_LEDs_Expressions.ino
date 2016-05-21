@@ -1,6 +1,8 @@
 #include <Adafruit_NeoPixel.h>
 #include <ros.h>
 #include <std_msgs/UInt8.h>
+#include <std_msgs/String.h>
+
 
 #ifdef __AVR__
   #include <avr/power.h>
@@ -8,7 +10,7 @@
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1
-#define PIN            10
+#define PIN            6
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS   81
@@ -23,7 +25,8 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 
 int delayval = 5; // delay for half a second
 int luminosite = 1;
-int mode = 0; // 0 = wait, 1 = start, 2 = running, 3 = loading
+int mode = 1; // 0 = wait, 1 = start, 2 = running, 3 = loading
+bool talking = false;
 
 void openFade()
 {
@@ -39,6 +42,129 @@ void openFade()
     pixels.show();
   }  
   delay(1000);
+}
+
+// Fonction animation bouche en fonction des voyelles
+// Non-fonctionnelle
+void talk2(const std_msgs::String& word)
+{
+  String phrase = "";
+
+  if(!talking)
+  {
+    talking = true;
+    
+    int nbWords = 1;
+    
+    // const char* to string
+    for(int i=0; i<strlen(word.data);i++)
+    {
+      phrase += word.data[i];
+    }
+    
+    boolean findSpace = false;
+    int index = 0;
+    
+    // boucler pour chaque mots
+    while(index != -1)
+    {
+      index = phrase.indexOf(" ");
+      String word1 = phrase.substring(0,index);
+      
+      // enlever le premier mot de la phrase, garder le reste
+      phrase = phrase.substring(index, phrase.length());
+      
+      int nbVoyelles = 0;
+      
+      // compter le nombre de voyelles
+      for(int j = 0; j < word1.length(); j++)
+      {
+        if(word1.charAt(j) == 'a')
+          nbVoyelles++;
+        else if(word1.charAt(j) == 'e')
+          nbVoyelles++;
+        else if(word1.charAt(j) == 'i')
+          nbVoyelles++;
+        else if(word1.charAt(j) == 'o')
+          nbVoyelles++;
+        else if(word1.charAt(j) == 'u')
+          nbVoyelles++;
+      }
+    
+      
+      int delais = 80;
+      
+      for(int j=0; j<nbVoyelles; j++)
+      {
+        
+        bouche_vide_no_show();
+        bouche_fermee(60,60,60);
+        delay(delais/nbVoyelles);
+        bouche_vide_no_show();
+        petite_bouche(60,60,60);
+        delay(delais/nbVoyelles);
+        bouche_vide_no_show();
+        grande_bouche(60,60,60);
+        delay(delais/nbVoyelles);
+        bouche_vide_no_show();
+        petite_bouche(60,60,60);
+        delay(delais/nbVoyelles);
+        bouche_vide_no_show();
+        bouche_fermee(60,60,60);
+        delay(delais/nbVoyelles);
+        bouche_vide_no_show();
+        smile(60,60,60);
+        
+        delay(10/nbVoyelles);
+      }
+      talking=false;
+    }
+  }
+}
+
+// Fonction animation bouche en fonction du nombre de mots
+void talk(const std_msgs::String& word)
+{
+  if(!talking)
+  {
+    talking = true;
+    int nbWords = 1;
+    for(int i=0; i<strlen(word.data);i++)
+    {
+      if(word.data[i] == ' ')
+      {
+        nbWords++;
+      }
+    }
+    
+    int delais = 50;
+    
+    for(int j=0; j<nbWords; j++)
+    {
+      
+      bouche_vide_no_show();
+      bouche_fermee(60,60,60);
+      delay(delais);
+      bouche_vide_no_show();
+      petite_bouche(60,60,60);
+      delay(delais);
+      bouche_vide_no_show();
+      grande_bouche(60,60,60);
+      delay(delais);
+      bouche_vide_no_show();
+      petite_bouche(60,60,60);
+      delay(delais);
+      bouche_vide_no_show();
+      bouche_fermee(60,60,60);
+      delay(delais);
+      bouche_vide_no_show();
+      smile(60,60,60);
+      
+      
+      delay(10);
+    }
+    talking=false;
+  }
 }
 
 void loadingFade()
@@ -360,6 +486,14 @@ void bouche_vide(){
     }
   
   }
+  
+void bouche_vide_no_show(){
+  for(int i=EYEPIXELS*2; i<NUMPIXELS; i++) {
+    // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
+  pixels.setPixelColor(i, pixels.Color(0,0,0)); 
+  }
+
+}
 
 void petite_bouche(uint8_t R,uint8_t G,uint8_t B){
    pixels.setPixelColor(BASE_BOUCHE + 12, pixels.Color(R,G,B));
@@ -502,6 +636,8 @@ ros::NodeHandle nh;
 ros::Subscriber<std_msgs::UInt8> subEmo("control_emo", control_emo );
 ros::Subscriber<std_msgs::UInt8> setBright("face_bright", set_brightness );
 ros::Subscriber<std_msgs::UInt8> setMode("face_mode", set_mode);
+ros::Subscriber<std_msgs::String> subTalk("SaraVoice", talk);
+
 
 void setup() 
 {
@@ -514,6 +650,7 @@ void setup()
   nh.subscribe(subEmo);
   nh.subscribe(setBright);
   nh.subscribe(setMode);
+  nh.subscribe(subTalk);
   pixels.setBrightness(DEFAULT_BRIGHTNESS);
   clearPixels(); 
   pixels.show();
@@ -521,6 +658,7 @@ void setup()
 
 void loop() 
 { 
+  
   if(mode == 0)
   { 
     
