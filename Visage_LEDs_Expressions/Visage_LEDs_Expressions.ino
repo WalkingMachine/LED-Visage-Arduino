@@ -25,7 +25,7 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 
 int delayval = 5; // delay for half a second
 int luminosite = 1;
-int mode = 1; // 0 = wait, 1 = start, 2 = running, 3 = loading
+int mode = 1; // 0 = wait, 1 = start, 2 = loading, 3 = green, 4 = yellow, 5 = red, 6 = wait for answer
 bool talking = false;
 
 void openFade()
@@ -125,6 +125,7 @@ void talk2(const std_msgs::String& word)
 // Fonction animation bouche en fonction du nombre de mots
 void talk(const std_msgs::String& word)
 {
+  int r=0, g=0, b=0;
   if(!talking)
   {
     talking = true;
@@ -136,30 +137,98 @@ void talk(const std_msgs::String& word)
         nbWords++;
       }
     }
+
+    if(mode == 0)
+    {
+
+    }
+    else if (mode == 1)
+    {
+      r=50;
+      g=50;
+      b=50;
+    }
+    else if(mode == 2)
+    {
+      r=50;
+      g=50;
+      b=50;
+    }
+    else if(mode == 3)
+    {
+      r=0;
+      g=50;
+      b=0;
+    }
+    else if(mode == 4)
+    {
+      r=50;
+      g=50;
+      b=0;
+    }
+    else if(mode == 5)
+    {
+      r=50;
+      g=0;
+      b=0;
+    }
+    else if (mode == 6)
+    {
+      r=0;
+      g=0;
+      b=50;
+    }
     
     int delais = 50;
-    
+
     for(int j=0; j<nbWords; j++)
     {
-      
       bouche_vide_no_show();
-      bouche_fermee(60,60,60);
+      bouche_fermee(r,g,b);
       delay(delais);
       bouche_vide_no_show();
-      petite_bouche(60,60,60);
+      petite_bouche(r,g,b);
       delay(delais);
       bouche_vide_no_show();
-      grande_bouche(60,60,60);
+      grande_bouche(r,g,b);
       delay(delais);
       bouche_vide_no_show();
-      petite_bouche(60,60,60);
+      petite_bouche(r,g,b);
       delay(delais);
       bouche_vide_no_show();
-      bouche_fermee(60,60,60);
+      bouche_fermee(r,g,b);
       delay(delais);
       bouche_vide_no_show();
-      smile(60,60,60);
-      
+
+      if(mode == 0)
+      {
+
+      }
+      else if (mode == 1)
+      {
+        openFade();
+      }
+      else if(mode == 2)
+      {
+        loadingRoll2();
+        smile(60,60,60);
+      }
+      else if(mode == 3)
+      {
+        emo_content();
+      }
+      else if(mode == 4)
+      {
+        emo_ciconspect();
+      }
+      else if(mode == 5)
+      {
+        emo_fache();
+      }
+      else if (mode == 6)
+      {
+        emo_wait()
+      }
       
       delay(10);
     }
@@ -346,6 +415,17 @@ void emo_content()
   delay(1000);
 }
 
+void emo_wait()
+{
+  /*Émotion : wait*********************************************/
+  clearPixels();
+  eye_1(0,0,50);
+  eye_2(0,0,50);
+  //bouche_vide(); //Changer LED3 et LED45
+  smile(0,0,50);
+  delay(1000);
+}
+
 void emo_triste()
 {
   /*Émotion : Triste*********************************************/
@@ -360,9 +440,9 @@ void emo_ciconspect()
   /*Émotion : Circonspect *********************************************/
   delay(1000);
   bouche_vide();
-  eye_1(50,50,50);
-  eye_2(50,50,50);
-  bouche_fermee(50,50,50);
+  eye_1(50,50,0);
+  eye_2(50,50,0);
+  bouche_fermee(50,50,0);
 }
 
 void emo_fache()
@@ -627,7 +707,6 @@ void set_brightness(const std_msgs::UInt8& value)
 }
 void set_mode(const std_msgs::UInt8& modeVal)
 {
-  if(modeVal.data >= 0 && modeVal.data <= 2)
     mode = modeVal.data;
 }
 
@@ -657,8 +736,7 @@ void setup()
 }
 
 void loop() 
-{ 
-  
+{
   if(mode == 0)
   { 
     
@@ -668,14 +746,29 @@ void loop()
     openFade();
     mode = 3;
   }
-  else if(mode == 3)
+  else if(mode == 2)
   {
     loadingRoll2();
     smile(60,60,60);
   }
-  else if(mode == 2)
+  else if(mode == 3)
   {
     emo_content();
+    mode = 0;
+  }
+  else if(mode == 4)
+  {
+    emo_ciconspect();
+    mode = 0;
+  }
+  else if(mode == 5)
+  {
+    emo_fache();
+    mode = 0;
+  }
+  else if (mode == 6)
+  {
+    emo_wait()
     mode = 0;
   }
   nh.spinOnce();
