@@ -227,7 +227,7 @@ void talk(const std_msgs::String& word)
       }
       else if (mode == 6)
       {
-        emo_wait()
+        emo_wait();
       }
       
       delay(10);
@@ -768,7 +768,7 @@ void loop()
   }
   else if (mode == 6)
   {
-    emo_wait()
+    emo_wait();
     mode = 0;
   }
   nh.spinOnce();
