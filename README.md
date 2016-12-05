@@ -1,3 +1,5 @@
+[DEPRECATED]
+
 # LED-VIsage-Arduino
 
 ## Instructions :
