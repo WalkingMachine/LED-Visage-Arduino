@@ -3,6 +3,8 @@
 #include <std_msgs/UInt8.h>
 #include <std_msgs/String.h>
 
+#include <std_srvs/SetBool.h>
+#include <std_msgs/Bool.h>
 
 #ifdef __AVR__
   #include <avr/power.h>
@@ -19,14 +21,30 @@
 
 #define DEFAULT_BRIGHTNESS 75
 
-
-
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
+bool start = false;
 int delayval = 5; // delay for half a second
 int luminosite = 1;
 int mode = 1; // 0 = wait, 1 = start, 2 = loading, 3 = green, 4 = yellow, 5 = red, 6 = wait for answer
 bool talking = false;
+bool opening_done = false;
+
+void control_emo(const std_msgs::UInt8& emo);
+
+void set_face_start(const std_srvs::SetBool::Request & req, std_srvs::SetBool::Response & res){
+    if((boolean)req.data){
+      start = true;
+      emo_content();
+  }
+  else {
+    start = false;
+    clearPixels();
+  }
+}
+
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+
 
 void openFade()
 {
@@ -671,6 +689,8 @@ void theaterChase(uint32_t c, uint8_t wait) {
 
 void control_emo(const std_msgs::UInt8& emo)
 {
+    if(start)
+    {
 	switch (emo.data) 
 	{
 	    case 1:
@@ -697,6 +717,7 @@ void control_emo(const std_msgs::UInt8& emo)
 	    default:
 	      emo_content();
 	}
+    }
 }
 
 void set_brightness(const std_msgs::UInt8& value)
@@ -705,17 +726,13 @@ void set_brightness(const std_msgs::UInt8& value)
  pixels.show(); 
   
 }
-void set_mode(const std_msgs::UInt8& modeVal)
-{
-    mode = modeVal.data;
-}
 
 ros::NodeHandle nh;
 
 ros::Subscriber<std_msgs::UInt8> subEmo("control_emo", control_emo );
 ros::Subscriber<std_msgs::UInt8> setBright("face_bright", set_brightness );
-ros::Subscriber<std_msgs::UInt8> setMode("face_mode", set_mode);
-ros::Subscriber<std_msgs::String> subTalk("SaraVoice", talk);
+//ros::Subscriber<std_msgs::String> subTalk("SaraVoice", talk);
+ros::ServiceServer<std_srvs::SetBool::Request, std_srvs::SetBool::Response> face_start_srv("sara_face/Start",&set_face_start);
 
 
 void setup() 
@@ -728,48 +745,25 @@ void setup()
   //nh.subscribe(subEye);
   nh.subscribe(subEmo);
   nh.subscribe(setBright);
-  nh.subscribe(setMode);
-  nh.subscribe(subTalk);
+  //nh.subscribe(subTalk);
   pixels.setBrightness(DEFAULT_BRIGHTNESS);
+  
   clearPixels(); 
   pixels.show();
+  
+  nh.advertiseService(face_start_srv);
 }
 
 void loop() 
 {
-  if(mode == 0)
-  { 
-    
-  }
-  else if (mode == 1)
+  if(!start)
   {
-    openFade();
-    mode = 3;
-  }
-  else if(mode == 2)
-  {
+    if(!opening_done)
+    {
+      openFade();
+      opening_done = true;        
+    }
     loadingRoll2();
-    smile(60,60,60);
-  }
-  else if(mode == 3)
-  {
-    emo_content();
-    mode = 0;
-  }
-  else if(mode == 4)
-  {
-    emo_ciconspect();
-    mode = 0;
-  }
-  else if(mode == 5)
-  {
-    emo_fache();
-    mode = 0;
-  }
-  else if (mode == 6)
-  {
-    emo_wait();
-    mode = 0;
   }
   nh.spinOnce();
 }
