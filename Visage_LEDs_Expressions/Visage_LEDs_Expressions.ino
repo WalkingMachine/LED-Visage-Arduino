@@ -729,8 +729,8 @@ void set_brightness(const std_msgs::UInt8& value)
 
 ros::NodeHandle nh;
 
-ros::Subscriber<std_msgs::UInt8> subEmo("control_emo", control_emo );
-ros::Subscriber<std_msgs::UInt8> setBright("face_bright", set_brightness );
+ros::Subscriber<std_msgs::UInt8> subEmo("sara_face/Emotion", control_emo );
+ros::Subscriber<std_msgs::UInt8> setBright("sara_face/Brightness", set_brightness );
 //ros::Subscriber<std_msgs::String> subTalk("SaraVoice", talk);
 ros::ServiceServer<std_srvs::SetBool::Request, std_srvs::SetBool::Response> face_start_srv("sara_face/Start",&set_face_start);
 
