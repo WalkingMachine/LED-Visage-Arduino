@@ -1,4 +1,4 @@
-# LED-VIsage-Arduino
+# LED-Visage-Arduino
 
 ## Instructions :
 1. Start serial communication : rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0  
