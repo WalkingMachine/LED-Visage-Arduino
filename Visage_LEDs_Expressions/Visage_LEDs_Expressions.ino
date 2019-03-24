@@ -522,6 +522,55 @@ void emo_party()
   theaterChase(pixels.Color(0, 0, 127), 100); // Blue
 }
 
+void emo_canadiens()
+{
+  /*Émotion : Canadiens*****************************************/
+  bouche_vide();
+  
+  //pixels fixes
+  
+  pixels.setPixelColor(BASE_BOUCHE + 13, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 14, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 15, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 16, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 17, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 18, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 19, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 20, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 24, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 34, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 38, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 41, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 45, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 46, pixels.Color(255,0,0));
+  pixels.setPixelColor(BASE_BOUCHE + 47, pixels.Color(255,0,0));
+  
+  pixels.setPixelColor(BASE_BOUCHE + 27, pixels.Color(255,255,255));
+  pixels.setPixelColor(BASE_BOUCHE + 28, pixels.Color(255,255,255));
+  pixels.setPixelColor(BASE_BOUCHE + 29, pixels.Color(255,255,255));
+  pixels.setPixelColor(BASE_BOUCHE + 30, pixels.Color(255,255,255));
+  pixels.setPixelColor(BASE_BOUCHE + 31, pixels.Color(255,255,255));
+  pixels.setPixelColor(BASE_BOUCHE + 39, pixels.Color(255,255,255));
+  pixels.setPixelColor(BASE_BOUCHE + 40, pixels.Color(255,255,255));
+  
+  canadiens_complet(true);
+  delay(200);
+  canadiens_complet(false);
+  delay(200);
+  canadiens_complet(true);
+  delay(200);
+  canadiens_complet(false);
+  delay(200);
+  canadiens_complet(true);
+  delay(200);
+  canadiens_complet(false);
+  delay(200);
+  canadiens_complet(true);
+  delay(200);
+  canadiens_complet(false);
+  delay(200);
+}
+
 void eye_1(uint8_t R,uint8_t G,uint8_t B){
 for(int i=0; i<EYEPIXELS; i++) {
     // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
@@ -651,6 +700,57 @@ void grande_bouche(uint8_t R,uint8_t G,uint8_t B){
    pixels.show();
   }
 
+  void canadiens_complet(bool val){
+    //yeux
+  for(int i=0; i<EYEPIXELS*2; i=i+2) {
+      // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
+    if(val)
+      pixels.setPixelColor(i, pixels.Color(255,0,0)); 
+    else
+      pixels.setPixelColor(i, pixels.Color(0,0,255)); 
+    }
+    for(int i=1; i<EYEPIXELS*2; i=i+2) {
+      // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
+    if(!val)
+      pixels.setPixelColor(i, pixels.Color(255,0,0)); 
+    else
+      pixels.setPixelColor(i, pixels.Color(0,0,255)); 
+    }
+
+    //bouche
+   uint32_t color1;
+   uint32_t color2;
+   if(val)
+    color1 = pixels.Color(0,0,255);
+   else
+    color1 = pixels.Color(255,0,0);
+   if(val)
+    color2 = pixels.Color(255,0,0);
+   else
+    color2 = pixels.Color(0,0,255);
+   
+   pixels.setPixelColor(BASE_BOUCHE + 1, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 2, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 3, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 4, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 5, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 6, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 7, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 8, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 9, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 21, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 23, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 35, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 37, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 42, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 43, color1);
+   pixels.setPixelColor(BASE_BOUCHE + 44, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 48, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 49, color2);
+   pixels.setPixelColor(BASE_BOUCHE + 50, color1);
+   pixels.show();
+  }
+
   void photo(){
     for(int i=EYEPIXELS*2; i<NUMPIXELS; i++) {
       // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
@@ -714,6 +814,9 @@ void control_emo(const std_msgs::UInt8& emo)
 	    case 7:
 	      emo_party();
 	      break;
+      case 8:
+        emo_canadiens();
+        break;
 	    default:
 	      emo_content();
 	}
@@ -765,8 +868,6 @@ void loop()
     }
     loadingRoll2();
   }
+
   nh.spinOnce();
 }
-
-
-
